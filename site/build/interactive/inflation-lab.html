@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>安全中心距实验</title>
+<style>
+:root{--navy:#0b3c5d;--blue:#145da0;--gold:#f4b942;--orange:#e4572e;--green:#2a9d8f;--paper:#f7fafc}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:var(--paper);color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.app{max-width:900px;margin:auto;background:white;border:1px solid #d9e3ea;border-radius:18px;padding:20px;box-shadow:0 8px 25px #0b3c5d16}
+h1{font-size:1.35rem;margin:.2rem 0}.intro{line-height:1.7;color:#415765}
+.controls{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#eef6ff;padding:14px;border-radius:12px}
+input[type=range]{width:100%;accent-color:var(--blue)}output{font-size:1.3rem;font-weight:700;min-width:7rem;text-align:right}
+svg{width:100%;height:auto;margin-top:14px;background:#fffdf8;border-radius:14px;border:1px solid #e4eaee}
+.status{font-weight:700;font-size:1.12rem;border-radius:12px;padding:12px;margin-top:12px}.safe{background:#e8f8f2;color:#087f5b}.touch{background:#fff8df;color:#8c5b00}.hit{background:#fff0ea;color:#b13a1b}
+.formula{font-family:Cambria,serif;text-align:center;font-size:1.16rem}.small{font-size:.9rem;color:#5f707b}
+</style>
+</head>
+<body>
+<main class="app">
+  <h1>互动实验：圆心离多远才安全？</h1>
+  <p class="intro">黄色圆是半径 8 的障碍物，蓝色圆是半径 1 的机器人。拖动滑块改变两圆中心距离。先预测状态，再看反馈。</p>
+  <div class="controls">
+    <label for="distance">中心距离（米）<input id="distance" type="range" min="7.5" max="10.5" step="0.01" value="9"></label>
+    <output id="distanceOut">9.00 米</output>
+  </div>
+  <svg viewBox="0 0 900 380" role="img" aria-labelledby="svgTitle svgDesc">
+    <title id="svgTitle">机器人与障碍物的圆心距离实验</title>
+    <desc id="svgDesc">一个半径八米的黄色障碍物和一个半径一米的蓝色机器人，滑块控制两圆中心距离。</desc>
+    <circle cx="275" cy="190" r="144" fill="#f4b942" fill-opacity=".63" stroke="#0b3c5d" stroke-width="3"/>
+    <circle cx="275" cy="190" r="162" fill="none" stroke="#e4572e" stroke-width="4" stroke-dasharray="10 8"/>
+    <circle id="robot" cx="437" cy="190" r="18" fill="#145da0" fill-opacity=".88" stroke="#0b3c5d" stroke-width="3"/>
+    <line id="distanceLine" x1="275" y1="190" x2="437" y2="190" stroke="#0b3c5d" stroke-width="3"/>
+    <circle cx="275" cy="190" r="5" fill="#0b3c5d"/><circle id="robotCenter" cx="437" cy="190" r="5" fill="white"/>
+    <text x="275" y="195" text-anchor="middle" font-size="20" font-weight="700" fill="#0b3c5d">障碍物 r=8</text>
+    <text id="robotLabel" x="437" y="150" text-anchor="middle" font-size="18" font-weight="700" fill="#145da0">机器人 r=1</text>
+    <text x="275" y="368" text-anchor="middle" font-size="17" fill="#e4572e">虚线：膨胀后的禁区，半径 8+1=9</text>
+  </svg>
+  <div id="status" class="status touch">正好相切：中心距离 = 9，按题目规则合法。</div>
+  <p class="formula">安全条件：中心距离 ≥ 障碍物半径 + 机器人半径 = 9</p>
+  <p class="small">静态兜底结论：即使滑块或 JavaScript 失效，上式仍完整表达判断规则。</p>
+</main>
+<script>
+const input=document.getElementById('distance'),out=document.getElementById('distanceOut');
+const robot=document.getElementById('robot'),center=document.getElementById('robotCenter');
+const line=document.getElementById('distanceLine'),label=document.getElementById('robotLabel'),status=document.getElementById('status');
+function draw(){
+  const d=Number(input.value),x=275+d*18;
+  out.value=d.toFixed(2)+' 米';
+  for(const el of [robot,center])el.setAttribute('cx',x);
+  line.setAttribute('x2',x);label.setAttribute('x',x);
+  status.className='status '+(d<9?'hit':d===9?'touch':'safe');
+  status.textContent=d<9?'发生碰撞：中心距离 < 9。':d===9?'正好相切：中心距离 = 9，按题目规则合法。':'安全：中心距离 > 9，还有 '+(d-9).toFixed(2)+' 米余量。';
+}
+input.addEventListener('input',draw);draw();
+</script>
+</body>
+</html>
+

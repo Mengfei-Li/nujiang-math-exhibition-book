@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>三角网格分层实验</title>
+<style>
+:root{--navy:#0b3c5d;--blue:#145da0;--gold:#f4b942;--orange:#e4572e;--green:#2a9d8f}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:#f7fafc;color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.app{max-width:900px;margin:auto;background:white;border:1px solid #d9e3ea;border-radius:18px;padding:20px;box-shadow:0 8px 25px #0b3c5d16}
+h1{font-size:1.35rem;margin:.2rem 0}.row{display:grid;grid-template-columns:1fr auto;gap:15px;align-items:center;background:#eef6ff;padding:14px;border-radius:12px}
+input{width:100%;accent-color:var(--blue)}output{font-size:1.25rem;font-weight:700}
+svg{width:100%;height:auto;margin-top:14px;border-radius:14px;background:#fffdf8;border:1px solid #e4eaee}
+.readout{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}.card{padding:10px;border-radius:10px;background:#f0fbf7;text-align:center}.card b{display:block;font-size:1.15rem}
+.tip{line-height:1.7;color:#4e626f}@media(max-width:620px){.readout{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+  <h1>互动实验：三角网格为什么像六边形一圈圈长大？</h1>
+  <p class="tip">选择层数。程序枚举所有满足 <b>max(|a|, |b|, |a+b|) ≤ n</b> 的整数坐标，而不是靠眼睛数圈。</p>
+  <div class="row"><label for="layer">显示到第几层？<input id="layer" type="range" min="0" max="5" step="1" value="2"></label><output id="layerOut">第 2 层</output></div>
+  <svg id="board" viewBox="0 0 900 570" role="img" aria-label="三角网格分层图"></svg>
+  <div class="readout">
+    <div class="card">当前最外圈<b id="ringCount">12 个点</b></div>
+    <div class="card">从中心累计<b id="totalCount">19 个点</b></div>
+    <div class="card">相邻中心距<b>20 米</b></div>
+  </div>
+  <p class="tip">观察：第 n 圈（n≥1）恰有 6n 个点；累计点数为 1+3n(n+1)。这只是阵列数量规律，不等于机器人需要多少张转弯卡。</p>
+</main>
+<script>
+const svg=document.getElementById('board'),slider=document.getElementById('layer');
+const NS='http://www.w3.org/2000/svg',colors=['#0b3c5d','#2a9d8f','#f4b942','#e4572e','#8e6bbf','#145da0'];
+function layer(a,b){return Math.max(Math.abs(a),Math.abs(b),Math.abs(a+b))}
+function elt(tag,attrs){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}
+function draw(){
+  const n=Number(slider.value);svg.replaceChildren();document.getElementById('layerOut').value='第 '+n+' 层';
+  document.getElementById('ringCount').textContent=(n===0?1:6*n)+' 个点';
+  document.getElementById('totalCount').textContent=(1+3*n*(n+1))+' 个点';
+  const scale=48/(Math.max(n,1)+.5),cx=450,cy=285;
+  for(let a=-n;a<=n;a++)for(let b=-n;b<=n;b++){
+    const ell=layer(a,b);if(ell>n)continue;
+    const x=cx+scale*(a+.5*b),y=cy-scale*Math.sqrt(3)/2*b;
+    const circle=elt('circle',{cx:x,cy:y,r:Math.max(6,scale*.22),fill:colors[ell],opacity:.76,stroke:'#0b3c5d','stroke-width':1.5});
+    const title=elt('title',{});title.textContent='坐标 ('+a+','+b+')，第 '+ell+' 层';circle.appendChild(title);svg.appendChild(circle);
+    if(n<=2){const t=elt('text',{x:x,y:y+4,'text-anchor':'middle','font-size':Math.max(9,scale*.16),fill:'white','font-weight':'700'});t.textContent=a+','+b;svg.appendChild(t)}
+  }
+  const legend=elt('text',{x:20,y:545,'font-size':17,fill:'#0b3c5d'});legend.textContent='把鼠标停在点上可读坐标与层数';svg.appendChild(legend);
+}
+slider.addEventListener('input',draw);draw();
+</script>
+</body>
+</html>

@@ -1,0 +1,113 @@
+/* User Provided Stylesheet */
+
+:root {
+  --nj-navy: #0b3c5d;
+  --nj-blue: #145da0;
+  --nj-sky: #d9eef8;
+  --nj-orange: #e4572e;
+  --nj-gold: #f4b942;
+  --nj-green: #2a9d8f;
+  --nj-paper: #fffdf8;
+}
+
+html { scroll-behavior: smooth; }
+body { font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif; }
+
+h1, h2, h3 {
+  color: var(--nj-navy);
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+h1 { letter-spacing: .02em; }
+
+.hero-panel {
+  border-radius: 22px;
+  padding: clamp(1.25rem, 4vw, 3rem);
+  color: white;
+  background: linear-gradient(135deg, #0b3c5d 0%, #145da0 58%, #2a9d8f 100%);
+  box-shadow: 0 14px 36px rgba(11, 60, 93, .20);
+  margin: 1rem 0 2rem;
+}
+.hero-panel h1, .hero-panel h2, .hero-panel p { color: white; }
+.hero-panel strong { color: #ffe09a; }
+
+.concept-card, .checkpoint, .misconception, .teacher-note, .claim-card {
+  border-radius: 14px;
+  padding: 1rem 1.2rem;
+  margin: 1rem 0;
+  background: #f7fafc;
+  border-left: 6px solid var(--nj-blue);
+}
+.checkpoint { background: #f0fbf7; border-left-color: var(--nj-green); }
+.misconception { background: #fff4ef; border-left-color: var(--nj-orange); }
+.teacher-note { background: #fff9e8; border-left-color: var(--nj-gold); }
+.claim-card { background: #eef6ff; border-left-color: var(--nj-navy); }
+
+.claim-proved { color: #087f5b; font-weight: 700; }
+.claim-construct { color: #145da0; font-weight: 700; }
+.claim-experiment { color: #8c5b00; font-weight: 700; }
+.claim-conjecture { color: #b13a1b; font-weight: 700; }
+
+.formula-box {
+  background: var(--nj-paper);
+  border: 1px solid #dce5eb;
+  border-radius: 12px;
+  padding: .8rem 1.1rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+
+.figure-frame {
+  padding: .65rem;
+  background: white;
+  border: 1px solid #dce5eb;
+  border-radius: 14px;
+  box-shadow: 0 5px 18px rgba(11,60,93,.08);
+}
+
+.lab-link {
+  display: inline-block;
+  padding: .7rem 1rem;
+  margin: .4rem 0;
+  border-radius: 999px;
+  color: white !important;
+  background: var(--nj-blue);
+  text-decoration: none !important;
+  font-weight: 700;
+}
+.lab-link:hover { background: var(--nj-navy); }
+
+.status-table td:first-child { font-weight: 700; white-space: nowrap; }
+
+iframe.math-lab {
+  width: 100%;
+  min-height: 620px;
+  border: 1px solid #cad8e2;
+  border-radius: 16px;
+  background: white;
+}
+
+@media (max-width: 720px) {
+  html, body { max-width: 100%; overflow-x: hidden; }
+  main.article-grid,
+  article.article-grid,
+  article.content,
+  .myst-fm-block,
+  .myst-jp-nb-block,
+  .myst-code { min-width: 0 !important; max-width: 100% !important; }
+  .myst-code { overflow-x: auto; }
+  h1 {
+    font-size: clamp(2rem, 10vw, 2.55rem) !important;
+    line-height: 1.16;
+    overflow-wrap: anywhere !important;
+    word-break: break-all !important;
+  }
+  iframe.math-lab { min-height: 720px; }
+  table { font-size: .9rem; }
+  .hero-panel { border-radius: 14px; }
+}
+
+@media print {
+  iframe.math-lab { display: none; }
+  .lab-link::after { content: "（互动版见电子书）"; }
+}

@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>精确前沿双向查询</title>
+<style>
+:root{--navy:#0b3c5d;--blue:#145da0;--orange:#e4572e;--green:#2a9d8f}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:#f7fafc;color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.app{max-width:900px;margin:auto;background:white;border:1px solid #d9e3ea;border-radius:18px;padding:20px;box-shadow:0 8px 25px #0b3c5d16}
+h1{font-size:1.35rem;margin:.2rem 0}.tabs{display:flex;gap:8px}button{font:inherit;padding:9px 14px;border-radius:999px;border:2px solid var(--blue);background:white;color:var(--navy);font-weight:700;cursor:pointer}button.on{background:var(--blue);color:white}
+.control{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#eef6ff;padding:14px;border-radius:12px;margin-top:12px}input{width:100%;accent-color:var(--blue)}output{font-size:1.25rem;font-weight:700}
+.answer{margin:13px 0;padding:16px;border-left:6px solid var(--green);border-radius:12px;background:#f0fbf7}.answer strong{font-size:1.8rem;color:var(--green)}
+canvas{width:100%;height:300px;border:1px solid #e1e8ed;border-radius:12px}.note{line-height:1.65;color:#4d626f}
+</style>
+</head>
+<body>
+<main class="app">
+  <h1>互动实验：给三角形目标，反查最少边数</h1>
+  <div class="tabs"><button id="n9" class="on">n=9</button><button id="n10">n=10</button></div>
+  <div class="control"><label for="k">至少需要的三角形数 k<input id="k" type="range" min="1" max="84" value="36"></label><output id="kOut">k=36</output></div>
+  <div class="answer">提交版计算机辅助精确答案：<strong id="answer">E(9,36)=24</strong><br><span id="explain">23 条边最多做到 35 个；24 条边已经能做到至少 36 个。</span></div>
+  <canvas id="chart" width="900" height="300" aria-label="精确阶梯图"></canvas>
+  <p class="note">这条阶梯来自 71 个边预算的三套独立求解后端一致结果，并经独立程序重数见证。它不是把散点连线后的猜测。一般 n≥9 时，只有指定区间已有解析精确公式；不能把 n=9、10 的有限表直接当作所有 n 的证明。</p>
+</main>
+<script>
+const common=[[1,1,7],[2,2,8],[3,4,9],[5,5,10],[6,7,11],[8,10,12],[11,11,14],[12,13,15],[14,16,16],[17,20,17],[21,21,18],[22,23,19],[24,26,20],[27,30,21],[31,35,22],[36,36,24],[37,38,25],[39,41,26],[42,45,27],[46,50,28],[51,56,29],[57,57,30],[58,59,31],[60,62,32],[63,66,33],[67,71,34],[72,77,35],[78,84,36]];
+const extra=[[85,85,38],[86,87,39],[88,90,40],[91,94,41],[95,99,42],[100,105,43],[106,112,44],[113,120,45]];
+function table(n){const out={};for(const [a,b,m] of common.concat(n===10?extra:[]))for(let k=a;k<=b;k++)out[k]=m;return out}
+let n=9;const slider=document.getElementById('k'),canvas=document.getElementById('chart'),ctx=canvas.getContext('2d');
+function draw(){
+ const data=table(n),k=Number(slider.value),m=data[k],prev=k>1?data[k-1]:6;
+ document.getElementById('kOut').value='k='+k;document.getElementById('answer').textContent='E('+n+','+k+')='+m;
+ document.getElementById('explain').textContent=(m-1)+' 条边还不够达到 '+k+' 个；'+m+' 条边已有见证达到至少 '+k+' 个。';
+ ctx.clearRect(0,0,900,300);ctx.fillStyle='#fffdf8';ctx.fillRect(0,0,900,300);ctx.strokeStyle='#145da0';ctx.lineWidth=4;ctx.beginPath();
+ const maxK=n===9?84:120,maxM=n===9?36:45,x=k0=>55+810*(k0-1)/(maxK-1),y=m0=>260-220*(m0-6)/(maxM-6);
+ ctx.moveTo(x(1),y(data[1]));for(let i=2;i<=maxK;i++){const xx=x(i),oldY=y(data[i-1]),newY=y(data[i]);ctx.lineTo(xx,oldY);ctx.lineTo(xx,newY)}ctx.stroke();
+ ctx.strokeStyle='#e4572e';ctx.lineWidth=2;ctx.setLineDash([7,6]);ctx.beginPath();ctx.moveTo(x(k),260);ctx.lineTo(x(k),y(m));ctx.lineTo(55,y(m));ctx.stroke();ctx.setLineDash([]);
+ ctx.fillStyle='#e4572e';ctx.beginPath();ctx.arc(x(k),y(m),7,0,Math.PI*2);ctx.fill();ctx.fillStyle='#0b3c5d';ctx.font='16px Microsoft YaHei';ctx.fillText('k',830,286);ctx.fillText('E(n,k)',5,24);
+}
+function setN(value){n=value;slider.max=n===9?84:120;if(Number(slider.value)>slider.max)slider.value=slider.max;document.getElementById('n9').className=n===9?'on':'';document.getElementById('n10').className=n===10?'on':'';draw()}
+document.getElementById('n9').onclick=()=>setN(9);document.getElementById('n10').onclick=()=>setN(10);slider.oninput=draw;draw();
+</script>
+</body>
+</html>

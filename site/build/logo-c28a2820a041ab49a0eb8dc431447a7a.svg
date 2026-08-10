@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 160 160" role="img" aria-labelledby="title desc">
+  <title id="title">怒江战队数学学习书标志</title>
+  <desc id="desc">六边形网格、机器人路线与三角形组成的标志</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#145DA0"/>
+      <stop offset="1" stop-color="#0B3C5D"/>
+    </linearGradient>
+  </defs>
+  <rect width="160" height="160" rx="30" fill="#F7FAFC"/>
+  <path d="M80 15 136 47v66l-56 32-56-32V47Z" fill="url(#g)"/>
+  <circle cx="55" cy="63" r="18" fill="#F4B942" stroke="#fff" stroke-width="5"/>
+  <path d="M43 112 76 55l33 57Z" fill="none" stroke="#fff" stroke-width="7" stroke-linejoin="round"/>
+  <path d="M49 98c15-10 30-7 38-19 7-10 10-21 23-25" fill="none" stroke="#E4572E" stroke-width="6" stroke-linecap="round"/>
+  <circle cx="49" cy="98" r="5" fill="#fff"/>
+  <circle cx="110" cy="54" r="5" fill="#fff"/>
+</svg>
+

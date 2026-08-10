@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>旋转规则分支实验</title>
+<style>
+:root{--navy:#0b3c5d;--blue:#145da0;--gold:#f4b942;--orange:#e4572e;--green:#2a9d8f}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:#f7fafc;color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.app{max-width:900px;margin:auto;background:white;border:1px solid #d9e3ea;border-radius:18px;padding:20px;box-shadow:0 8px 25px #0b3c5d16}
+h1{font-size:1.35rem;margin:.2rem 0}.question{background:#eef6ff;border-radius:12px;padding:14px;line-height:1.6}
+.buttons{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}button{border:2px solid var(--blue);border-radius:999px;padding:10px 16px;background:white;color:var(--navy);font:inherit;font-weight:700;cursor:pointer}
+button[aria-pressed=true]{background:var(--blue);color:white}.result{border-left:6px solid var(--green);background:#f0fbf7;border-radius:12px;padding:15px}
+.number{font-size:2rem;font-weight:800;color:var(--green)}.identity{display:grid;grid-template-columns:10rem 1fr;gap:6px;border-top:1px solid #ccd9e1;margin-top:12px;padding-top:12px}
+.warning{margin-top:12px;padding:12px;border-radius:10px;background:#fff0ea;color:#9c2f16;font-weight:700}.static{margin-top:12px;color:#50636f;line-height:1.6}
+@media(max-width:620px){.identity{grid-template-columns:1fr}.number{font-size:1.65rem}}
+</style>
+</head>
+<body>
+<main class="app">
+  <h1>规则选择器：先问“我们知道什么”，再引用数字</h1>
+  <p class="question"><b>出发前，队伍是否知道所有障碍物共同旋转的方向，并且允许按方向选择原路线或镜像路线？</b></p>
+  <div class="buttons">
+    <button id="known" aria-pressed="true">知道方向，可二选一</button>
+    <button id="unknown" aria-pressed="false">不知道方向，只能固定同一路线</button>
+  </div>
+  <section class="result" id="result" aria-live="polite"></section>
+  <p class="static"><b>静态兜底：</b>已知共同方向模型对应严格可达下界 445.858 米；未知方向稳健模型对应严格可达下界 285.492 米。二者条件不同，均不是最大值。</p>
+</main>
+<script>
+const models={
+ known:{title:'模型 A：共同刚性旋转，统一方向预先已知',number:'≥ 445.858 米',cards:'12 张加速 + 88 张转向',evidence:'提交计划与连续时间 Lipschitz 区间证书；按方向选择原路线或镜像路线。',cannot:'不能推出这是最大距离；不能把未镜像的同一路线用于相反方向。'},
+ unknown:{title:'模型 B：卡片使用前方向未知',number:'≥ 285.492 米',cards:'43 张加速 + 57 张转向',evidence:'静态余量减最大位移，并有高精度连续证书；同一固定路线兼容顺、逆方向。',cannot:'不能推出这是未知方向的上限；不覆盖途中变向、角速度变化或任意初相位。'}
+};
+const result=document.getElementById('result'),known=document.getElementById('known'),unknown=document.getElementById('unknown');
+function show(key){
+ const m=models[key];
+ result.innerHTML='<h2>'+m.title+'</h2><div class="number">'+m.number+'</div><div class="identity"><b>研究量</b><span>100 张卡片下保证可达的终点离原点距离（越大越好）</span><b>结论类型</b><span>严格可行构造给出的下界</span><b>卡片账本</b><span>'+m.cards+'</span><b>证据</b><span>'+m.evidence+'</span></div><div class="warning">不能推出：'+m.cannot+'</div>';
+ known.setAttribute('aria-pressed',key==='known');unknown.setAttribute('aria-pressed',key==='unknown');
+}
+known.onclick=()=>show('known');unknown.onclick=()=>show('unknown');show('known');
+</script>
+</body>
+</html>
+

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>KK与Colex工厂</title>
+<style>
+:root{--navy:#0b3c5d;--blue:#145da0;--gold:#f4b942;--orange:#e4572e;--green:#2a9d8f}
+*{box-sizing:border-box}body{margin:0;padding:18px;background:#f7fafc;color:var(--navy);font-family:"Microsoft YaHei","PingFang SC",sans-serif}
+.app{max-width:900px;margin:auto;background:white;border:1px solid #d9e3ea;border-radius:18px;padding:20px;box-shadow:0 8px 25px #0b3c5d16}
+h1{font-size:1.35rem;margin:.2rem 0}.row{display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:#eef6ff;padding:14px;border-radius:12px}input{width:100%;accent-color:var(--blue)}output{font-size:1.3rem;font-weight:700}
+.result{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:12px 0}.card{background:#f0fbf7;border-radius:11px;padding:10px;text-align:center}.card b{display:block;font-size:1.35rem}
+svg{width:100%;height:auto;background:#fffdf8;border:1px solid #e4eaee;border-radius:14px}.formula{text-align:center;font:1.2rem Cambria,serif}.note{line-height:1.6;color:#4d626f}
+@media(max-width:650px){.result{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<main class="app">
+  <h1>互动实验：把 m 条边集中起来</h1>
+  <p class="note">拖动边预算。工厂先造一个尽可能大的完全图 Kq，再把剩余 r 条边接到一个新点。这个构造达到无固定边图的最大三角形数。</p>
+  <div class="row"><label for="m">总边数 m<input id="m" type="range" min="0" max="45" step="1" value="30"></label><output id="mOut">30 条</output></div>
+  <div class="result"><div class="card">完全图大小 q<b id="qOut">8</b></div><div class="card">剩余边 r<b id="rOut">2</b></div><div class="card">最大三角形数 KK(m)<b id="kkOut">57</b></div></div>
+  <svg id="board" viewBox="0 0 900 510" role="img" aria-label="Colex完全图加一个部分连接点"></svg>
+  <p class="formula" id="formula">30 = C(8,2)+2；KK(30)=C(8,3)+C(2,2)=57</p>
+  <p class="note"><b>重要边界：</b>KK 是没有指定固定图时的极值。长期题二还要求六条固定边 H，因此小 k 时可能需要额外代价；当 n≥9 且 57≤k≤C(n,3) 时，论文证明固定边可以无额外代价地嵌入，于是 E(n,k)=μ(k)。</p>
+</main>
+<script>
+const svg=document.getElementById('board'),slider=document.getElementById('m'),NS='http://www.w3.org/2000/svg';
+function c2(n){return n*(n-1)/2}function c3(n){return n*(n-1)*(n-2)/6}
+function node(tag,attrs){const e=document.createElementNS(NS,tag);for(const [k,v] of Object.entries(attrs))e.setAttribute(k,v);return e}
+function draw(){
+ const m=Number(slider.value);let q=1;while(c2(q+1)<=m)q++;const r=m-c2(q),kk=c3(q)+c2(r);
+ document.getElementById('mOut').value=m+' 条';document.getElementById('qOut').textContent=q;document.getElementById('rOut').textContent=r;document.getElementById('kkOut').textContent=kk;
+ document.getElementById('formula').textContent=m+' = C('+q+',2)+'+r+'；KK('+m+')=C('+q+',3)+C('+r+',2)='+kk;
+ svg.replaceChildren();const pts={};const radius=Math.min(180,30+q*13);
+ for(let i=0;i<q;i++){const a=-Math.PI/2+2*Math.PI*i/q;pts[i]=[410+radius*Math.cos(a),250+radius*Math.sin(a)]}
+ for(let i=0;i<q;i++)for(let j=i+1;j<q;j++){const p=pts[i],z=pts[j];svg.appendChild(node('line',{x1:p[0],y1:p[1],x2:z[0],y2:z[1],stroke:'#145da0','stroke-width':q>9?1.2:2,opacity:.72}))}
+ const extra=[760,250];for(let i=0;i<r;i++){const p=pts[i];svg.appendChild(node('line',{x1:extra[0],y1:extra[1],x2:p[0],y2:p[1],stroke:'#e4572e','stroke-width':4}))}
+ for(let i=0;i<q;i++){const p=pts[i];svg.appendChild(node('circle',{cx:p[0],cy:p[1],r:q>10?12:17,fill:'#f4b942',stroke:'#0b3c5d','stroke-width':2}))}
+ if(r>0)svg.appendChild(node('circle',{cx:extra[0],cy:extra[1],r:21,fill:'#e4572e',stroke:'#0b3c5d','stroke-width':2}));
+ const t=node('text',{x:450,y:490,'text-anchor':'middle','font-size':17,fill:'#0b3c5d'});t.textContent='蓝色：K'+q+' 的全部边；橙色：新点连向核心的 '+r+' 条边';svg.appendChild(t);
+}
+slider.addEventListener('input',draw);draw();
+</script>
+</body>
+</html>
